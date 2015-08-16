@@ -154,4 +154,21 @@ class ListTest extends FunSpec with MustMatchers {
   it("map applies f to each elements of a list") {
     map(List(1, 2, 3))(_ + 1) mustBe List(2, 3, 4)
   }
+
+  it("filter returns filtered list") {
+    filter(List(1, 2, 3, 4))(_ % 2 == 0) mustBe List(2, 4)
+  }
+
+  it("filterViaFoldRight returns filtered list") {
+    filterViaFoldRight(List(1, 2, 3, 4))(_ % 2 == 0) mustBe List(2, 4)
+  }
+
+  it("filterViaFlatMap returns filtered list") {
+    filterViaFlatMap(List(1, 2, 3, 4))(_ % 2 == 0) mustBe List(2, 4)
+  }
+
+  it("flatMap first maps and then flattens a list") {
+    flatMap(List(1, 2, 3))(i => List(i, i)) mustBe List(1, 1, 2, 2, 3, 3)
+  }
+
 }

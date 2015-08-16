@@ -95,13 +95,33 @@ object List {
     case Cons(h, t) => foldLeft(t, f(z, h))(f)
   }
 
-  def reverse[A](l: List[A]): List[A] = foldLeft(l, Nil: List[A])((b, a) => Cons(a, b))
+  def reverse[A](l: List[A]): List[A] =
+    foldLeft(l, Nil: List[A])((b, a) => Cons(a, b))
 
-  def flatten[A](l: List[List[A]]):List[A] = foldRight(l, List[A]())(append)
+  def flatten[A](l: List[List[A]]):List[A] =
+    foldRight(l, List[A]())(append)
 
-  def add1(l: List[Int]): List[Int] = foldRight(l, List[Int]())((e, a) => Cons(e + 1, a))
+  def add1(l: List[Int]): List[Int] =
+    foldRight(l, List[Int]())((e, a) => Cons(e + 1, a))
 
-  def doubles2strings(l: List[Double]): List[String] = foldRight(l, List[String]())((e, acc) => Cons(e.toString, acc))
+  def doubles2strings(l: List[Double]): List[String] =
+    foldRight(l, List[String]())((e, acc) => Cons(e.toString, acc))
 
-  def map[A, B](l: List[A])(f: A => B): List[B] = foldRight(l, List[B]())((e, acc) => Cons(f(e), acc))
+  def map[A, B](l: List[A])(f: A => B): List[B] =
+    foldRight(l, List[B]())((e, acc) => Cons(f(e), acc))
+
+  def filter[A](l: List[A])(f: A => Boolean): List[A] = l match {
+    case Nil => Nil
+    case Cons(h, t) if f(h) => Cons(h, filter(t)(f))
+    case Cons(_, t) => filter(t)(f)
+  }
+
+  def filterViaFoldRight[A](l: List[A])(f: A => Boolean): List[A] = 
+    foldRight(l, List[A]())((e, a) => if (f(e)) Cons(e, a) else a)
+
+  def filterViaFlatMap[A](l: List[A])(f: A => Boolean): List[A] =
+    flatMap(l)(e => if (f(e)) List(e) else Nil)
+
+  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] =
+    flatten(map(l)(f))
 }
