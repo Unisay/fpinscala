@@ -139,6 +139,22 @@ class ListTest extends FunSpec with MustMatchers {
 
   }
 
+  describe("zipWith") {
+
+    it("zipWith two lists of the same length") {
+      zipWith(List(1, 2, 3), List("a", "b", "c"))(_ + _) mustBe List("1a", "2b", "3c")
+    }
+
+    it("zipWith two lists where first list is shorter") {
+      zipWith(List(1, 2), List("a", "b", "c"))(_ + _) mustBe List("1a", "2b")
+    }
+
+    it("zipWith two lists where last list is shorter") {
+      zipWith(List(1, 2, 3), List("a", "b"))(_ + _) mustBe List("1a", "2b")
+    }
+
+  }
+
   it("flatten returns flattened list") {
     flatten(List(List(1, 2), List(2, 3), List(3, 4))) mustBe List(1, 2, 2, 3, 3, 4)
   }

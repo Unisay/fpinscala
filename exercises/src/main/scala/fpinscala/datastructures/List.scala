@@ -1,5 +1,7 @@
 package fpinscala.datastructures
 
+import scala.annotation.tailrec
+
 sealed trait List[+A]
 
 // `List` data type, parameterized on a type, `A`
@@ -98,7 +100,7 @@ object List {
   def reverse[A](l: List[A]): List[A] =
     foldLeft(l, Nil: List[A])((b, a) => Cons(a, b))
 
-  def flatten[A](l: List[List[A]]):List[A] =
+  def flatten[A](l: List[List[A]]): List[A] =
     foldRight(l, List[A]())(append)
 
   def add1(l: List[Int]): List[Int] =
@@ -116,12 +118,19 @@ object List {
     case Cons(_, t) => filter(t)(f)
   }
 
-  def filterViaFoldRight[A](l: List[A])(f: A => Boolean): List[A] = 
+  def filterViaFoldRight[A](l: List[A])(f: A => Boolean): List[A] =
     foldRight(l, List[A]())((e, a) => if (f(e)) Cons(e, a) else a)
 
   def filterViaFlatMap[A](l: List[A])(f: A => Boolean): List[A] =
     flatMap(l)(e => if (f(e)) List(e) else Nil)
 
-  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] =
+  def flatMap[A, B](l: List[A])(f: A => List[B]): List[B] =
     flatten(map(l)(f))
+
+  def zipWith[A, B, C](l: List[A], r: List[B])(f: (A, B) => C): List[C] = (l, r) match {
+      case (Nil, _) => Nil
+      case (_, Nil) => Nil
+      case (Cons(lh, lt), Cons(rh, rt)) => Cons(f(lh, rh), zipWith(lt, rt)(f))
+  }
+
 }
