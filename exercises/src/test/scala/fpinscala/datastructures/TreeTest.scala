@@ -10,16 +10,32 @@ class TreeTest extends FunSpec with MustMatchers {
     Tree.size(tree) mustBe 5
   }
 
+  it("sizeViaFold returns number of nodes in the tree") {
+    Tree.sizeViaFold(tree) mustBe 5
+  }
+
   it("maximum returns maximum value of a leaf in the tree") {
     Tree.maximum(tree) mustBe 3
+  }
+
+  it("maximumViaFold returns maximum value of a leaf in the tree") {
+    Tree.maximumViaFold(tree) mustBe 3
   }
 
   it("depth returns the maximum path length from the root of a tree to any leaf") {
     Tree.depth(tree) mustBe 2
   }
 
+  it("depthViaFold returns the maximum path length from the root of a tree to any leaf") {
+    Tree.depthViaFold(tree) mustBe 2
+  }
+
   it("map modifies each element in a tree with a given function") {
     Tree.map(tree)(_.toString) mustBe Branch(Branch(Leaf("1"), Leaf("2")), Leaf("3"))
+  }
+
+  it("mapViaFold modifies each element in a tree with a given function") {
+    Tree.mapViaFold(tree)(_.toString) mustBe Branch(Branch(Leaf("1"), Leaf("2")), Leaf("3"))
   }
 
 }
