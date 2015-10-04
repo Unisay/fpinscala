@@ -1,5 +1,6 @@
 package fpinscala.errorhandling
 
+import fpinscala.errorhandling.Option.map2
 import org.scalatest.{FunSpec, MustMatchers}
 
 class OptionTest extends FunSpec with MustMatchers {
@@ -78,6 +79,26 @@ class OptionTest extends FunSpec with MustMatchers {
 
     it("returns Some when satisfies predicate") {
       some1 filter (_ < 5) mustBe some1
+    }
+
+  }
+
+  describe("map2") {
+
+    it("returns Some when applied to Some and Some") {
+      map2(Some(2), Some(3))(_ + _) mustBe Some(5)
+    }
+
+    it("returns None when applied to None and None") {
+      map2(none, none)(_ + _) mustBe none
+    }
+
+    it("returns None when applied to None and Some") {
+      map2(none, Some(3))(_ + _) mustBe none
+    }
+
+    it("returns None when applied to Some and None") {
+      map2(Some(2), none)(_ + _) mustBe none
     }
 
   }
