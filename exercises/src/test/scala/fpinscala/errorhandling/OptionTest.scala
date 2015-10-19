@@ -1,6 +1,6 @@
 package fpinscala.errorhandling
 
-import fpinscala.errorhandling.Option.map2
+import fpinscala.errorhandling.Option.{map2, sequence}
 import org.scalatest.{FunSpec, MustMatchers}
 
 class OptionTest extends FunSpec with MustMatchers {
@@ -101,6 +101,21 @@ class OptionTest extends FunSpec with MustMatchers {
       map2(Some(2), none)(_ + _) mustBe none
     }
 
+  }
+
+  describe("sequence") {
+
+    it("returns Some(Nil) for Nil") {
+      sequence(Nil) mustBe Some(Nil)
+    }
+
+    it("returns Some of list") {
+      sequence(List(Some(1), Some(2), Some(3))) mustBe Some(List(1, 2, 3))
+    }
+
+    it("returns None when list contains None") {
+      sequence(List(Some(1), Some(2), None)) mustBe None
+    }
   }
 
 }
