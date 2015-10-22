@@ -1,5 +1,6 @@
 package fpinscala.errorhandling
 
+import fpinscala.errorhandling.Either.traverse
 import org.scalatest.{FunSpec, MustMatchers}
 
 class EitherTest extends FunSpec with MustMatchers {
@@ -61,6 +62,25 @@ class EitherTest extends FunSpec with MustMatchers {
 
     it("returns Left(self error) if this is left and arg is left") {
       left.map2(Left("arg error"))(_ + _) mustBe left
+    }
+
+  }
+
+  describe("traverse") {
+    val error = Left("Boom!")
+    def f(i: Int): Either[String, Double] = if (i % 4 == 0) error else Right(i.toDouble)
+
+    it("returns traversed list") {
+      traverse(List(1, 2, 3))(f) mustBe Right(List(1.0, 2.0, 3.0))
+    }
+
+    it("returns error") {
+      traverse(List(1, 2, 3, 4))(f) mustBe error
+      traverse(List(4, 1, 2, 3))(f) mustBe error
+    }
+
+    it("returns Right of empty list") {
+      traverse(Nil)(f) mustBe Right(Nil)
     }
 
   }
