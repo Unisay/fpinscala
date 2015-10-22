@@ -31,7 +31,7 @@ class StreamTest extends FunSpec with MustMatchers {
     }
 
     it("returns empty stream") {
-      Stream().take(4) mustBe Stream()
+      Stream().take(4) mustBe Empty
     }
 
   }
@@ -43,11 +43,27 @@ class StreamTest extends FunSpec with MustMatchers {
     }
 
     it("returns all stream if n > Stream.length") {
-      Stream(1, 2).drop(4) mustBe Stream()
+      Stream(1, 2) drop 4 mustBe Empty
     }
 
     it("returns empty stream") {
-      Stream().drop(4) mustBe Stream()
+      Stream() drop 4 mustBe Empty
+    }
+
+  }
+
+  describe("takeWhile") {
+
+    it("returns empty stream if predicate is always false") {
+      Stream(1, 3, 5, 7).takeWhile(_ < 0).toList mustBe Nil
+    }
+
+    it("returns prefix of the stream while predicate is true") {
+      Stream(1, 3, 5, 7).takeWhile(_ < 6).toList mustBe List(1, 3, 5)
+    }
+
+    it("returns whole stream if predicate is always true") {
+      Stream(1, 3, 5, 7).takeWhile(_ < 9).toList mustBe List(1, 3, 5, 7)
     }
 
   }
