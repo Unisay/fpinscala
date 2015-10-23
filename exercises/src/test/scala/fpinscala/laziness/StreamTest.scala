@@ -68,4 +68,32 @@ class StreamTest extends FunSpec with MustMatchers {
 
   }
 
+  describe("takeWhileViaFoldRight") {
+
+    it("returns empty stream if predicate is always false") {
+      Stream(1, 3, 5, 7).takeWhileViaFoldRight(_ < 0).toList mustBe Nil
+    }
+
+    it("returns prefix of the stream while predicate is true") {
+      Stream(1, 3, 5, 7).takeWhileViaFoldRight(_ < 6).toList mustBe List(1, 3, 5)
+    }
+
+    it("returns whole stream if predicate is always true") {
+      Stream(1, 3, 5, 7).takeWhileViaFoldRight(_ < 9).toList mustBe List(1, 3, 5, 7)
+    }
+
+  }
+
+  describe("headOption") {
+
+    it("some head") {
+      Stream(1, 2, 3).headOption mustBe Some(1)
+    }
+
+    it("none head") {
+      Empty.headOption mustBe None
+    }
+
+  }
+
 }
