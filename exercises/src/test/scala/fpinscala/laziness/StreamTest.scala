@@ -96,4 +96,45 @@ class StreamTest extends FunSpec with MustMatchers {
 
   }
 
+  describe("map") {
+
+    it("applies function to every element of a stream") {
+      Stream(1, 2, 3).map(_.toString).toList mustBe List("1", "2", "3")
+    }
+
+  }
+
+  describe("flatMap") {
+
+    it("applies function to every element of a stream and flattens results") {
+      val f: Int => Stream[Int] = e => if (e % 2 == 0) Stream(e, e * 10) else Empty
+      Stream(1, 2, 3, 4).flatMap(f).toList mustBe List(2, 20, 4, 40)
+    }
+
+  }
+
+  describe("filter") {
+
+    it("removes element that doesn't satisfy a predicate") {
+      Stream(1, 2, 3, 4).filter(_ % 2 == 0).toList mustBe List(2, 4)
+    }
+
+  }
+
+  describe("append") {
+
+    it("appends a stream to the end of the empty stream") {
+      Empty.append(Stream(1, 2)).toList mustBe List(1, 2)
+    }
+
+    it("appends one stream to the end of another") {
+      Stream(1, 2).append(Stream(3, 4)).toList mustBe List(1, 2, 3, 4)
+    }
+
+    it("appends empty stream to the end of another") {
+      Stream(1, 2).append(Empty).toList mustBe List(1, 2)
+    }
+
+  }
+
 }
