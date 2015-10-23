@@ -84,9 +84,11 @@ object Stream {
     if (as.isEmpty) empty
     else cons(as.head, apply(as.tail: _*))
 
-  val ones: Stream[Int] = Stream.cons(1, ones)
+  def constant(c: Int): Stream[Int] = Stream.cons(c, constant(c))
 
-  def from(n: Int): Stream[Int] = sys.error("todo")
+  val ones: Stream[Int] = constant(1)
+
+  def from(n: Int): Stream[Int] = cons(n, from(n + 1))
 
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = sys.error("todo")
 }

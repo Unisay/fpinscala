@@ -137,4 +137,20 @@ class StreamTest extends FunSpec with MustMatchers {
 
   }
 
+  describe("constant") {
+
+    it("returns infinite stream of constants") {
+      Stream.constant(5).map(_ - 4).take(5).toList mustBe List(1, 1, 1, 1, 1)
+    }
+
+  }
+
+  describe("from") {
+
+    it("returns growing row of integers") {
+      Stream.from(3).take(5).toList mustBe List(3, 4, 5, 6, 7)
+    }
+
+  }
+
 }
