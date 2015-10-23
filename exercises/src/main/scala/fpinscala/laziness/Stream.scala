@@ -90,5 +90,10 @@ object Stream {
 
   def from(n: Int): Stream[Int] = cons(n, from(n + 1))
 
+  val fibs: Stream[Int] = {
+    def _fib(p1: Int, p2: Int): Stream[Int] = cons(p1, _fib(p2, p1 + p2))
+    _fib(0, 1)
+  }
+
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = sys.error("todo")
 }

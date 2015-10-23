@@ -153,4 +153,11 @@ class StreamTest extends FunSpec with MustMatchers {
 
   }
 
+  describe("fibs") {
+
+    it("returns fibonacci sequence") {
+      Stream.fibs.take(7).toList mustBe List(0, 1, 1, 2, 3, 5, 8)
+    }
+
+  }
 }
