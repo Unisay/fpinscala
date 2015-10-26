@@ -95,5 +95,17 @@ object Stream {
     _fib(0, 1)
   }
 
-  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = sys.error("todo")
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] =
+    f(z) match {
+      case Some((a, s)) => cons(a, unfold(s)(f))
+      case None => empty
+    }
+
+  def onesViaUnfold: Stream[Int] = unfold(1)(s => Some(s, s))
+
+  def constantViaUnfold[T](c: T): Stream[T] = unfold(c)(s => Some(s, s))
+
+  def fromViaUnfold(n: Int): Stream[Int] = unfold(n)(s => Some(s, s + 1))
+
+  def fibsViaUnfold: Stream[Int] = unfold((0, 1))(p => Some(p._1, (p._2, p._1 + p._2)))
 }

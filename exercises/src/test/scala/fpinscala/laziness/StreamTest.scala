@@ -160,4 +160,29 @@ class StreamTest extends FunSpec with MustMatchers {
     }
 
   }
+
+  describe("constantViaUnfold") {
+
+    it("returns infinite stream of constants") {
+      Stream.constantViaUnfold(5).map(_ - 4).take(5).toList mustBe List(1, 1, 1, 1, 1)
+    }
+
+  }
+
+  describe("fromViaUnfold") {
+
+    it("returns growing row of integers") {
+      Stream.fromViaUnfold(3).take(5).toList mustBe List(3, 4, 5, 6, 7)
+    }
+
+  }
+
+  describe("fibsViaUnfold") {
+
+    it("returns fibonacci sequence") {
+      Stream.fibsViaUnfold.take(7).toList mustBe List(0, 1, 1, 2, 3, 5, 8)
+    }
+
+  }
+
 }
