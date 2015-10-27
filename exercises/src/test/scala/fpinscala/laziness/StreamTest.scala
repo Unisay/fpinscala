@@ -36,6 +36,26 @@ class StreamTest extends FunSpec with MustMatchers {
 
   }
 
+  describe("takeViaUnfold") {
+
+    it("returns stream of the first n elements") {
+      Stream(1, 2, 3, 4).takeViaUnfold(0).toList mustBe List()
+      Stream(1, 2, 3, 4).takeViaUnfold(1).toList mustBe List(1)
+      Stream(1, 2, 3, 4).takeViaUnfold(2).toList mustBe List(1, 2)
+      Stream(1, 2, 3, 4).takeViaUnfold(3).toList mustBe List(1, 2, 3)
+      Stream(1, 2, 3, 4).takeViaUnfold(4).toList mustBe List(1, 2, 3, 4)
+    }
+
+    it("returns all stream if n > Stream.length") {
+      Stream(1, 2).takeViaUnfold(4).toList mustBe List(1, 2)
+    }
+
+    it("returns empty stream") {
+      Stream().takeViaUnfold(4) mustBe Empty
+    }
+
+  }
+
   describe("drop") {
 
     it("returns stream without the first n elements") {
@@ -64,6 +84,22 @@ class StreamTest extends FunSpec with MustMatchers {
 
     it("returns whole stream if predicate is always true") {
       Stream(1, 3, 5, 7).takeWhile(_ < 9).toList mustBe List(1, 3, 5, 7)
+    }
+
+  }
+
+  describe("takeWhileViaUnfold") {
+
+    it("returns empty stream if predicate is always false") {
+      Stream(1, 3, 5, 7).takeWhileViaUnfold(_ < 0).toList mustBe Nil
+    }
+
+    it("returns prefix of the stream while predicate is true") {
+      Stream(1, 3, 5, 7).takeWhileViaUnfold(_ < 6).toList mustBe List(1, 3, 5)
+    }
+
+    it("returns whole stream if predicate is always true") {
+      Stream(1, 3, 5, 7).takeWhileViaUnfold(_ < 9).toList mustBe List(1, 3, 5, 7)
     }
 
   }
@@ -100,6 +136,14 @@ class StreamTest extends FunSpec with MustMatchers {
 
     it("applies function to every element of a stream") {
       Stream(1, 2, 3).map(_.toString).toList mustBe List("1", "2", "3")
+    }
+
+  }
+
+  describe("mapViaUnfold") {
+
+    it("applies function to every element of a stream") {
+      Stream(1, 2, 3).mapViaUnfold(_.toString).toList mustBe List("1", "2", "3")
     }
 
   }
@@ -181,6 +225,38 @@ class StreamTest extends FunSpec with MustMatchers {
 
     it("returns fibonacci sequence") {
       Stream.fibsViaUnfold.take(7).toList mustBe List(0, 1, 1, 2, 3, 5, 8)
+    }
+
+  }
+
+  describe("zipWithViaUnfold") {
+
+    it("zips streams of equal length") {
+      Stream(1, 2, 3).zipWithViaUnfold(Stream("a", "b", "c"))(_ + "-" + _).toList mustBe List("1-a", "2-b", "3-c")
+    }
+
+    it("zips with a longer stream") {
+      Stream(1, 2).zipWithViaUnfold(Stream("a", "b", "c"))(_ + "-" + _).toList mustBe List("1-a", "2-b")
+    }
+
+    it("zips with a shorter stream") {
+      Stream(1, 2, 3).zipWithViaUnfold(Stream("a", "b"))(_ + "-" + _).toList mustBe List("1-a", "2-b")
+    }
+
+  }
+
+  describe("zipAll") {
+
+    it("zips streams of equal length") {
+      Stream(1, 2).zipAll(Stream("a", "b")).toList mustBe List((Some(1), Some("a")), (Some(2), Some("b")))
+    }
+
+    it("zips with a longer stream") {
+      Stream(1).zipAll(Stream("a", "b")).toList mustBe List((Some(1), Some("a")), (None, Some("b")))
+    }
+
+    it("zips with a shorter stream") {
+      Stream(1, 2).zipAll(Stream("a")).toList mustBe List((Some(1), Some("a")), (Some(2), None))
     }
 
   }

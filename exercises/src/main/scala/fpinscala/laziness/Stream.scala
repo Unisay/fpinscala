@@ -33,6 +33,11 @@ trait Stream[+A] {
     case _ => empty
   }
 
+  def takeViaUnfold(n: Int): Stream[A] = unfold((this, n)) {
+    case (Cons(h, t), nn) if nn > 0 => Some(h(), (t(), nn - 1))
+    case _ => None
+  }
+
   def drop(n: Int): Stream[A] = this match {
     case Cons(_, t) if n > 0 => t().drop(n - 1)
     case _ => this
@@ -41,6 +46,11 @@ trait Stream[+A] {
   def takeWhile(p: A => Boolean): Stream[A] = this match {
     case Cons(h, t) if p(h()) => cons(h(), t().takeWhile(p))
     case _ => empty
+  }
+
+  def takeWhileViaUnfold(p: A => Boolean): Stream[A] = unfold(this) {
+    case Cons(h, t) if p(h()) => Some(h(), t())
+    case _ => None
   }
 
   def takeWhileViaFoldRight(p: A => Boolean): Stream[A] =
@@ -55,6 +65,11 @@ trait Stream[+A] {
   def map[B](f: A => B): Stream[B] =
     foldRight(empty[B])((h, t) => cons(f(h), t))
 
+  def mapViaUnfold[B](f: A => B): Stream[B] = unfold(this) {
+    case Cons(h, t) => Some(f(h()), t())
+    case _ => None
+  }
+
   def filter(p: A => Boolean): Stream[A] =
     foldRight(empty[A])((h, t) => if (p(h)) cons(h, t) else t)
 
@@ -63,6 +78,18 @@ trait Stream[+A] {
 
   def flatMap[B](f: A => Stream[B]): Stream[B] =
     foldRight(empty[B])((h, t) => f(h) append t)
+
+  def zipWithViaUnfold[B, C](bs: Stream[B])(f: (A, B) => C) = unfold((this, bs)) {
+    case (Cons(ah, at), Cons(bh, bt)) => Some(f(ah(), bh()), (at(), bt()))
+    case _ => None
+  }
+
+  def zipAll[B](bs: Stream[B]): Stream[(Option[A], Option[B])] = unfold((this, bs)) {
+    case (Cons(ah, at), Cons(bh, bt)) => Some((Some(ah()), Some(bh())), (at(), bt()))
+    case (Empty, Cons(bh, bt)) => Some((None, Some(bh())), (empty, bt()))
+    case (Cons(ah, at), Empty) => Some((Some(ah()), None), (at(), empty))
+    case _ => None
+  }
 
   def startsWith[B](s: Stream[B]): Boolean = sys.error("todo")
 }
@@ -108,4 +135,5 @@ object Stream {
   def fromViaUnfold(n: Int): Stream[Int] = unfold(n)(s => Some(s, s + 1))
 
   def fibsViaUnfold: Stream[Int] = unfold((0, 1))(p => Some(p._1, (p._2, p._1 + p._2)))
+
 }
