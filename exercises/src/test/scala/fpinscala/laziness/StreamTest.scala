@@ -302,4 +302,12 @@ class StreamTest extends FunSpec with MustMatchers {
 
   }
 
+  describe("scanRight") {
+
+    it("returns list of intermediate results") {
+      Stream(1, 2, 3).scanRight(0)(_ + _).toList mustBe List(6, 5, 3, 0)
+    }
+
+  }
+
 }

@@ -20,6 +20,18 @@ trait Stream[+A] {
       case _ => z
     }
 
+  def scanRight[B](z: B)(f: (A, => B) => B): Stream[B] =
+    foldRight(z, Stream(z)) { (a, acc) =>
+      lazy val p = acc
+      val h = f(a, p._1)
+      (h, cons(h, p._2))
+    }._2
+
+  def scanRightViaUnfold[B](z: => B)(f: (A, => B) => B): Stream[B] = unfold(this) {
+    case s@Cons(h, t) => Some((s.foldRight(z)(f), t()))
+    case Empty => None
+  }.append(Stream(z))
+
   def exists(p: A => Boolean): Boolean =
     foldRight(false)((a, b) => p(a) || b)
 
@@ -37,7 +49,7 @@ trait Stream[+A] {
     case _ => empty
   }
 
-  def takeViaUnfold(n: Int): Stream[A] = unfold((this, n)) {
+  def takeViaUnfold(n: Int): Stream[A] = unfold(this, n) {
     case (Cons(h, t), nn) if nn > 0 => Some(h(), (t(), nn - 1))
     case _ => None
   }
@@ -83,7 +95,7 @@ trait Stream[+A] {
   def flatMap[B](f: A => Stream[B]): Stream[B] =
     foldRight(empty[B])((h, t) => f(h) append t)
 
-  def zipWithViaUnfold[B, C](bs: Stream[B])(f: (A, B) => C) = unfold((this, bs)) {
+  def zipWithViaUnfold[B, C](bs: Stream[B])(f: (A, B) => C) = unfold(this, bs) {
     case (Cons(ah, at), Cons(bh, bt)) => Some(f(ah(), bh()), (at(), bt()))
     case _ => None
   }
@@ -105,7 +117,7 @@ trait Stream[+A] {
   }
 
   def tails: Stream[Stream[A]] = unfold(this) {
-    case s@Cons(_, t) => Some((s, t()))
+    case s@Cons(_, t) => Some(s, t())
     case Empty => None
   }.append(Stream(empty))
 
@@ -151,6 +163,6 @@ object Stream {
 
   def fromViaUnfold(n: Int): Stream[Int] = unfold(n)(s => Some(s, s + 1))
 
-  def fibsViaUnfold: Stream[Int] = unfold((0, 1))(p => Some(p._1, (p._2, p._1 + p._2)))
+  def fibsViaUnfold: Stream[Int] = unfold(0, 1)(p => Some(p._1, (p._2, p._1 + p._2)))
 
 }
