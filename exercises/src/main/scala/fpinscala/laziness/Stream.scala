@@ -9,6 +9,10 @@ trait Stream[+A] {
     case _ => Nil
   }
 
+  def isEmpty: Boolean = this == Empty
+
+  def isNotEmpty: Boolean = !isEmpty
+
   def foldRight[B](z: => B)(f: (A, => B) => B): B = // The arrow `=>` in front of the argument type `B` means
   // that the function `f` takes its second argument by name and may choose not to evaluate it.
     this match {
@@ -91,7 +95,20 @@ trait Stream[+A] {
     case _ => None
   }
 
-  def startsWith[B](s: Stream[B]): Boolean = sys.error("todo")
+  def startsWith[B](that: Stream[B]): Boolean =
+    zipAll(that).takeWhile(_._2.isDefined).forAll(p => p._1 == p._2)
+
+  def startsWithRegularRecursion[B](that: Stream[B]): Boolean = (this, that) match {
+    case (_, Empty) => true
+    case (Cons(h1, t1), Cons(h2, t2)) if h1() == h2() => t1().startsWithRegularRecursion(t2())
+    case _ => false
+  }
+
+  def tails: Stream[Stream[A]] = unfold(this) {
+    case s@Cons(_, t) => Some((s, t()))
+    case Empty => None
+  }.append(Stream(empty))
+
 }
 
 case object Empty extends Stream[Nothing]

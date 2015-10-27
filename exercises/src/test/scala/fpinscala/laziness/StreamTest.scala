@@ -261,4 +261,45 @@ class StreamTest extends FunSpec with MustMatchers {
 
   }
 
+  describe("startsWith") {
+
+    it("returns true if stream starts with another non-empty stream") {
+      Stream(1, 2, 3) startsWith Stream(1, 2) mustBe true
+    }
+
+    it("returns true if stream starts with another empty stream") {
+      Stream(1, 2, 3) startsWith Empty mustBe true
+    }
+
+    it("returns true if empty stream starts with another empty stream") {
+      Empty startsWith Empty mustBe true
+    }
+
+    it("returns false for an empty stream starts with another non-empty stream") {
+      Empty startsWith Stream(1) mustBe false
+    }
+
+    it("returns false if stream starts with another non-empty stream") {
+      Stream(1, 3, 4) startsWith Stream(1, 2) mustBe false
+    }
+
+  }
+
+  describe("tails") {
+
+    it("returns stream of tails") {
+      Stream(1, 2, 3, 4).tails.map(_.toList).toList mustBe List(
+        List(1, 2, 3, 4),
+        List(2, 3, 4),
+        List(3, 4),
+        List(4),
+        List())
+    }
+
+    it("returns empty stream for empty stream") {
+      Empty.tails.toList mustBe List(Empty)
+    }
+
+  }
+
 }
