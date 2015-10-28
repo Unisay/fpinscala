@@ -45,6 +45,12 @@ class RNGTest extends FunSpec with MustMatchers {
       randomIntegers mustEqual predefinedValues.reverse
     }
 
+    it("generates a list of random integers (via sequence)") {
+      val predefinedValues = List(1, 2, 3)
+      val (randomIntegers, _) = intsViaSequence(3)(TestRNG(predefinedValues: _*))
+      randomIntegers mustEqual predefinedValues.reverse
+    }
+
   }
 
 }
